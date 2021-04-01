@@ -48,7 +48,7 @@ class ScreenshotCapture(QWidget):
         if not os.path.isdir(path):
             os.mkdir(path)
 
-    def reset_str(self):
+    def reset_str(self):  # 저장 공간 리셋
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
         with open('config.ini', 'w', encoding='utf-8') as configfile:
@@ -58,8 +58,9 @@ class ScreenshotCapture(QWidget):
         self.storage_label.setText("현재 저장 장소 = " + config_parser['directory']['directory'])
         self.storage_label.repaint()
 
-    def reset_cov(self):
-        self.cover_label.setText("현재 촬영할 범위(픽셀) = (0, 0) (" + str(GetSystemMetrics(0)) + ", " + str(GetSystemMetrics(1)) + ")")
+    def reset_cov(self):  # 촬영 범위 리셋
+        self.cover_label.setText(
+            "현재 촬영할 범위(픽셀) = (0, 0) (" + str(GetSystemMetrics(0)) + ", " + str(GetSystemMetrics(1)) + ")")
         self.cover_label.repaint()
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
@@ -71,8 +72,7 @@ class ScreenshotCapture(QWidget):
             config_parser.write(configfile)
         configfile.close()
 
-
-    def select_directory(self):
+    def select_directory(self):  # 저장 공간 설정
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
         with open('config.ini', 'w', encoding='utf-8') as configfile:
@@ -82,8 +82,7 @@ class ScreenshotCapture(QWidget):
         self.storage_label.setText("현재 저장 장소 = " + config_parser['directory']['directory'])
         self.storage_label.repaint()
 
-
-    def open_directory(self):
+    def open_directory(self):   # 저장 공간 열기
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
         path = config_parser['directory']['directory']
@@ -91,7 +90,7 @@ class ScreenshotCapture(QWidget):
             os.mkdir(path)
         os.startfile(config_parser['directory']['directory'])
 
-    def capture(self):
+    def capture(self):  # 촬영
         counter = 1
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
@@ -112,7 +111,7 @@ class ScreenshotCapture(QWidget):
                 counter = 1
             if KB.is_pressed("e"): break
 
-    def get_mouse(self):
+    def get_mouse(self):    # 마우스 위치 받아오기
         self.cover_label.setText("촬영할 범위의 왼쪽 위를 클릭하세요")
         self.cover_label.repaint()
         while 1:
@@ -191,7 +190,8 @@ class ScreenshotCapture(QWidget):
 
         box_2 = QHBoxLayout()
         box_2.addStretch(1)
-        box_2.addWidget(QLabel('현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(GetSystemMetrics(0)) + ' X ' + str(GetSystemMetrics(1))))  # 현재 화면 크기 출력
+        box_2.addWidget(QLabel(
+            '현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(GetSystemMetrics(0)) + ' X ' + str(GetSystemMetrics(1))))  # 현재 화면 크기 출력
         box_2.addStretch(1)
 
         box_3 = QHBoxLayout()
@@ -206,7 +206,7 @@ class ScreenshotCapture(QWidget):
 
         box_5 = QHBoxLayout()
         box_5.addStretch(1)
-        box_5.addWidget(QLabel("사용법 = 촬영 시작 버튼을 누른 뒤 Ctrl + Alt를 누를 때 마다 스크린샷이 저장됩니다.\n"\
+        box_5.addWidget(QLabel("사용법 = 촬영 시작 버튼을 누른 뒤 Ctrl + Alt를 누를 때 마다 스크린샷이 저장됩니다.\n" \
                                + "스크린샷을 필요한 만큼 촬영한 뒤에는 E를 눌러 촬영을 종료합니다."))
         box_5.addStretch(1)
 
@@ -229,8 +229,8 @@ class ScreenshotCapture(QWidget):
         self.setLayout(vbox)
 
         self.setWindowTitle('스크린샷 캡쳐 by BangHyungJin')  # 프로그램 제목 설정
-        self.setWindowIcon(QIcon('screenshot_icon.png'))    # 프로그램 아이콘 설정 (아이콘은 프로젝트 폴더에 위치)
-        self.setGeometry(300, 300, 720, 400)               # 창 위치, 크기 설정 (X위치, Y위치, X크기, Y크기)
+        self.setWindowIcon(QIcon('screenshot_icon.png'))  # 프로그램 아이콘 설정 (아이콘은 프로젝트 폴더에 위치)
+        self.setGeometry(300, 300, 720, 400)  # 창 위치, 크기 설정 (X위치, Y위치, X크기, Y크기)
         self.show()
 
 
