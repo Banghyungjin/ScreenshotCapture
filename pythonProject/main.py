@@ -32,7 +32,7 @@ class ScreenshotCapture(QWidget):
         config_parser['directory']['directory'] = 'screenshots'
 
         config_parser['shortcuts'] = {}
-        config_parser['shortcuts']['take_shot'] = 'Ctrl + 5'
+        config_parser['shortcuts']['take_shot'] = 'Ctrl + Alt'
 
         config_parser['screensize'] = {}
         config_parser['screensize']['axisX1'] = '0'
@@ -43,6 +43,10 @@ class ScreenshotCapture(QWidget):
         # 설정파일 저장
         with open('config.ini', 'w', encoding='utf-8') as configfile:
             config_parser.write(configfile)
+        configfile.close()
+        path = config_parser['directory']['directory']
+        if not os.path.isdir(path):
+            os.mkdir(path)
 
     def reset_str(self):
         config_parser = configparser.ConfigParser()
@@ -50,6 +54,7 @@ class ScreenshotCapture(QWidget):
         with open('config.ini', 'w', encoding='utf-8') as configfile:
             config_parser.set('directory', 'directory', 'screenshots')
             config_parser.write(configfile)
+        configfile.close()
         self.storage_label.setText("현재 저장 장소 = " + config_parser['directory']['directory'])
         self.storage_label.repaint()
 
@@ -64,6 +69,7 @@ class ScreenshotCapture(QWidget):
             config_parser.set('screensize', 'axisX2', str(GetSystemMetrics(0)))
             config_parser.set('screensize', 'axisY2', str(GetSystemMetrics(1)))
             config_parser.write(configfile)
+        configfile.close()
 
 
     def select_directory(self):
@@ -72,6 +78,7 @@ class ScreenshotCapture(QWidget):
         with open('config.ini', 'w', encoding='utf-8') as configfile:
             config_parser.set('directory', 'directory', QFileDialog.getExistingDirectory(self, "select Directory"))
             config_parser.write(configfile)
+        configfile.close()
         self.storage_label.setText("현재 저장 장소 = " + config_parser['directory']['directory'])
         self.storage_label.repaint()
 
@@ -88,13 +95,12 @@ class ScreenshotCapture(QWidget):
         counter = 1
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
+        path = config_parser['directory']['directory'] + '/' + self.datetime.toString('yyyy-MM-dd')
+        if not os.path.isdir(path):
+            os.mkdir(path)
         while 1:
             if KB.is_pressed(config_parser['shortcuts']['take_shot']) and counter:
                 time = QTime.currentTime()
-                self.datetime = QDateTime.currentDateTime()
-                path = config_parser['directory']['directory'] + '/' + self.datetime.toString('yyyy-MM-dd')
-                if not os.path.isdir(path):
-                    os.mkdir(path)
                 x1 = config_parser['screensize']['axisX1']
                 y1 = config_parser['screensize']['axisY1']
                 x2 = config_parser['screensize']['axisX2']
@@ -102,18 +108,11 @@ class ScreenshotCapture(QWidget):
                 im = ImageGrab.grab(bbox=(int(x1), int(y1), int(x2), int(y2)))
                 im.save(path + '/' + time.toString('hh시 mm분 ss초 zzz') + '.png')
                 counter = 0
-            if not KB.is_pressed(config_parser['shortcuts']['take_shot']) and not counter:
+            if not KB.is_pressed("ctrl") or not KB.is_pressed("alt"):
                 counter = 1
-            if KB.is_pressed("ctrl + q"):
-                break
-
-
-    def set_screenshot_size(self):
-        config_parser = configparser.ConfigParser()
-        config_parser.read('config.ini', encoding='utf-8')
+            if KB.is_pressed("e"): break
 
     def get_mouse(self):
-        counter = 1
         self.cover_label.setText("촬영할 범위의 왼쪽 위를 클릭하세요")
         self.cover_label.repaint()
         while 1:
@@ -139,6 +138,7 @@ class ScreenshotCapture(QWidget):
             config_parser.set('screensize', 'axisX2', str(right_lower[0]))
             config_parser.set('screensize', 'axisY2', str(right_lower[1]))
             config_parser.write(configfile)
+        configfile.close()
 
     def __init__(self):
         super().__init__()
@@ -179,9 +179,9 @@ class ScreenshotCapture(QWidget):
         reset_cov_btn.setToolTip('스크린샷 촬영 범위를 전체 화면 촬영으로 초기화 합니다.')
         reset_cov_btn.clicked.connect(self.reset_cov)  # 버튼이 클릭되면 해당 함수 실행
 
-        capture_btn = QPushButton('촬영 시작, 종료 = Ctrl + q')
+        capture_btn = QPushButton('촬영 시작 = Q,  종료 = E')
         capture_btn.setToolTip('스크린샷 촬영을 시작합니다.')
-        capture_btn.setShortcut("Ctrl+q")
+        capture_btn.setShortcut("q")
         capture_btn.clicked.connect(self.capture)  # 버튼이 클릭되면 해당 함수 실행
 
         box_1 = QHBoxLayout()
@@ -206,7 +206,8 @@ class ScreenshotCapture(QWidget):
 
         box_5 = QHBoxLayout()
         box_5.addStretch(1)
-        box_5.addWidget(QLabel("사용법 = 촬영 시작 버튼을 누른 뒤 Ctrl + 5를 누를 때 마다 스크린샷이 저장됩니다."))
+        box_5.addWidget(QLabel("사용법 = 촬영 시작 버튼을 누른 뒤 Ctrl + Alt를 누를 때 마다 스크린샷이 저장됩니다.\n"\
+                               + "스크린샷을 필요한 만큼 촬영한 뒤에는 E를 눌러 촬영을 종료합니다."))
         box_5.addStretch(1)
 
         grid = QGridLayout()
