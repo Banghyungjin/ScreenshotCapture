@@ -41,7 +41,7 @@ class ScreenshotCapture(QWidget):
         config_parser['screensize']['axisY2'] = str(GetSystemMetrics(1))
 
         # 설정파일 저장
-        with open('config.ini', 'w', encoding='utf-8') as configfile:
+        with open('config.ini', 'w', encoding='utf-8') as configfile:   # 스크린샷 저장 폴더가 없을 경우 만듬
             config_parser.write(configfile)
         configfile.close()
         path = config_parser['directory']['directory']
@@ -157,7 +157,7 @@ class ScreenshotCapture(QWidget):
 
         self.storage_text = "현재 저장 장소 = " + config_parser['directory']['directory']
         self.storage_label = QLabel(self.storage_text, self)
-
+        # 버튼 생성
         reset_str_btn = QPushButton('저장 장소 초기화')
         reset_str_btn.setToolTip('저장 장소를 초기화 합니다.')
         reset_str_btn.clicked.connect(self.reset_str)  # 버튼이 클릭되면 해당 함수 실행
@@ -182,7 +182,7 @@ class ScreenshotCapture(QWidget):
         capture_btn.setToolTip('스크린샷 촬영을 시작합니다.')
         capture_btn.setShortcut("q")
         capture_btn.clicked.connect(self.capture)  # 버튼이 클릭되면 해당 함수 실행
-
+        # 박스 레이아웃 생성
         box_1 = QHBoxLayout()
         box_1.addStretch(1)
         box_1.addWidget(QLabel('오늘 날짜 : ' + self.datetime.toString('yyyy년 MM월 dd일')))
@@ -190,8 +190,7 @@ class ScreenshotCapture(QWidget):
 
         box_2 = QHBoxLayout()
         box_2.addStretch(1)
-        box_2.addWidget(QLabel(
-            '현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(GetSystemMetrics(0)) + ' X ' + str(GetSystemMetrics(1))))  # 현재 화면 크기 출력
+        box_2.addWidget(QLabel('현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(GetSystemMetrics(0)) + ' X ' + str(GetSystemMetrics(1))))  # 현재 화면 크기 출력
         box_2.addStretch(1)
 
         box_3 = QHBoxLayout()
@@ -209,7 +208,7 @@ class ScreenshotCapture(QWidget):
         box_5.addWidget(QLabel("사용법 = 촬영 시작 버튼을 누른 뒤 Ctrl + Alt를 누를 때 마다 스크린샷이 저장됩니다.\n" \
                                + "스크린샷을 필요한 만큼 촬영한 뒤에는 E를 눌러 촬영을 종료합니다."))
         box_5.addStretch(1)
-
+        # 그리드 레이아웃 생성
         grid = QGridLayout()
         grid.addWidget(save_btn, 0, 0)
         grid.addWidget(open_btn, 0, 1)
@@ -227,7 +226,6 @@ class ScreenshotCapture(QWidget):
         vbox.addLayout(grid)
 
         self.setLayout(vbox)
-
         self.setWindowTitle('스크린샷 캡쳐 by BangHyungJin')  # 프로그램 제목 설정
         self.setWindowIcon(QIcon('screenshot_icon.png'))  # 프로그램 아이콘 설정 (아이콘은 프로젝트 폴더에 위치)
         self.setGeometry(300, 300, 720, 400)  # 창 위치, 크기 설정 (X위치, Y위치, X크기, Y크기)
