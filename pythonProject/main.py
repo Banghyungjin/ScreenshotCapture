@@ -10,8 +10,8 @@ from PyQt5.QtCore import QDateTime, QTime
 from win32api import GetSystemMetrics
 from PIL import ImageGrab
 import configparser
-import mouse as MS
-import keyboard as KB
+import mouse as ms
+import keyboard as kb
 
 
 class ScreenshotCapture(QWidget):
@@ -98,7 +98,7 @@ class ScreenshotCapture(QWidget):
         if not os.path.isdir(path):
             os.mkdir(path)
         while 1:
-            if KB.is_pressed(config_parser['shortcuts']['take_shot']) and counter:
+            if kb.is_pressed(config_parser['shortcuts']['take_shot']) and counter:
                 time = QTime.currentTime()
                 x1 = config_parser['screensize']['axisX1']
                 y1 = config_parser['screensize']['axisY1']
@@ -107,25 +107,25 @@ class ScreenshotCapture(QWidget):
                 im = ImageGrab.grab(bbox=(int(x1), int(y1), int(x2), int(y2)))
                 im.save(path + '/' + time.toString('hh시 mm분 ss초 zzz') + '.png')
                 counter = 0
-            if not KB.is_pressed("ctrl") or not KB.is_pressed("alt"):
+            if not kb.is_pressed("ctrl") or not kb.is_pressed("alt"):
                 counter = 1
-            if KB.is_pressed("e"): break
+            if kb.is_pressed("e"): break
 
     def get_mouse(self):    # 마우스 위치 받아오기
         self.cover_label.setText("촬영할 범위의 왼쪽 위를 클릭하세요")
         self.cover_label.repaint()
         while 1:
-            if MS.is_pressed():
-                left_upper = MS.get_position()
+            if ms.is_pressed():
+                left_upper = ms.get_position()
                 break
-        while MS.is_pressed():
-            if not MS.is_pressed():
+        while ms.is_pressed():
+            if not ms.is_pressed():
                 break
         self.cover_label.setText("촬영할 범위의 오른쪽 아래를 클릭하세요")
         self.cover_label.repaint()
         while 1:
-            if MS.is_pressed():
-                right_lower = MS.get_position()
+            if ms.is_pressed():
+                right_lower = ms.get_position()
                 break
         self.cover_label.setText("현재 촬영할 범위(픽셀) = " + str(left_upper) + " " + str(right_lower))
         self.cover_label.repaint()
