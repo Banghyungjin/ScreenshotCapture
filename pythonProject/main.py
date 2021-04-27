@@ -147,13 +147,12 @@ class ScreenshotCapture(QWidget):
             self.config_generator()
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
-        self.storage_label = QLabel(self.storage_text, self)
         self.storage_text = "현재 저장 장소 = " + config_parser['directory']['directory']
-        self.cover_label = QLabel(self.cover_text, self)
+        self.storage_label = QLabel(self.storage_text, self)
         self.cover_text = "현재 촬영할 범위(픽셀) = (" + config_parser['screensize']['axisX1'] + ", " \
                           + config_parser['screensize']['axisY1'] + ") (" + config_parser['screensize']['axisX2'] \
                           + ", " + config_parser['screensize']['axisY2'] + ")"
-
+        self.cover_label = QLabel(self.cover_text, self)
         self.datetime = QDateTime.currentDateTime()
         self.init_ui()
 
