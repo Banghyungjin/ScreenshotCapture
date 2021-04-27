@@ -185,7 +185,7 @@ class ScreenshotCapture(QWidget):
         # 박스 레이아웃 생성
         box_1 = QHBoxLayout()
         box_1.addStretch(1)
-        box_1.addWidget(QLabel('오늘 날짜 : ' + self.datetime.toString('yyyy년 MM월 dd일')))
+        box_1.addWidget(QLabel('오늘 날짜 : ' + self.datetime.toString('yyyy 년 MM 월 dd 일')))
         box_1.addStretch(1)
 
         box_2 = QHBoxLayout()
@@ -206,7 +206,7 @@ class ScreenshotCapture(QWidget):
 
         box_5 = QHBoxLayout()
         box_5.addStretch(1)
-        box_5.addWidget(QLabel("사용법 = 촬영 시작 버튼을 누른 뒤 Ctrl + Alt를 누를 때 마다 스크린샷이 저장됩니다.\n" \
+        box_5.addWidget(QLabel("사용법 = 촬영 시작 버튼을 누른 뒤 Ctrl + Alt 를 누를 때 마다 스크린샷이 저장됩니다.\n"
                                + "스크린샷을 필요한 만큼 촬영한 뒤에는 E를 눌러 촬영을 종료합니다."))
         box_5.addStretch(1)
         # 그리드 레이아웃 생성
