@@ -14,6 +14,15 @@ import mouse as ms
 import keyboard as kb
 
 
+def open_directory():  # 저장 공간 열기
+    config_parser = configparser.ConfigParser()
+    config_parser.read('config.ini', encoding='utf-8')
+    path = config_parser['directory']['directory']
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    os.startfile(config_parser['directory']['directory'])
+
+
 class ScreenshotCapture(QWidget):
 
     def config_generator(self):
@@ -41,7 +50,7 @@ class ScreenshotCapture(QWidget):
         config_parser['screensize']['axisY2'] = str(GetSystemMetrics(1))
 
         # 설정파일 저장
-        with open('config.ini', 'w', encoding='utf-8') as configfile:   # 스크린샷 저장 폴더가 없을 경우 만듬
+        with open('config.ini', 'w', encoding='utf-8') as configfile:  # 스크린샷 저장 폴더가 없을 경우 만듬
             config_parser.write(configfile)
         configfile.close()
         path = config_parser['directory']['directory']
@@ -82,14 +91,6 @@ class ScreenshotCapture(QWidget):
         self.storage_label.setText("현재 저장 장소 = " + config_parser['directory']['directory'])
         self.storage_label.repaint()
 
-    def open_directory(self):   # 저장 공간 열기
-        config_parser = configparser.ConfigParser()
-        config_parser.read('config.ini', encoding='utf-8')
-        path = config_parser['directory']['directory']
-        if not os.path.isdir(path):
-            os.mkdir(path)
-        os.startfile(config_parser['directory']['directory'])
-
     def capture(self):  # 촬영
         counter = 1
         config_parser = configparser.ConfigParser()
@@ -109,9 +110,10 @@ class ScreenshotCapture(QWidget):
                 counter = 0
             if not kb.is_pressed("ctrl") or not kb.is_pressed("alt"):
                 counter = 1
-            if kb.is_pressed("e"): break
+            if kb.is_pressed("e"):
+                break
 
-    def get_mouse(self):    # 마우스 위치 받아오기
+    def get_mouse(self):  # 마우스 위치 받아오기
         self.cover_label.setText("촬영할 범위의 왼쪽 위를 클릭하세요")
         self.cover_label.repaint()
         while 1:
@@ -143,20 +145,19 @@ class ScreenshotCapture(QWidget):
         super().__init__()
         if not os.path.isfile('config.ini'):
             self.config_generator()
+        config_parser = configparser.ConfigParser()
+        config_parser.read('config.ini', encoding='utf-8')
+        self.storage_label = QLabel(self.storage_text, self)
+        self.storage_text = "현재 저장 장소 = " + config_parser['directory']['directory']
+        self.cover_label = QLabel(self.cover_text, self)
+        self.cover_text = "현재 촬영할 범위(픽셀) = (" + config_parser['screensize']['axisX1'] + ", " \
+                          + config_parser['screensize']['axisY1'] + ") (" + config_parser['screensize']['axisX2'] \
+                          + ", " + config_parser['screensize']['axisY2'] + ")"
+
         self.datetime = QDateTime.currentDateTime()
         self.init_ui()
 
     def init_ui(self):
-        config_parser = configparser.ConfigParser()
-        config_parser.read('config.ini', encoding='utf-8')
-
-        self.cover_text = "현재 촬영할 범위(픽셀) = (" + config_parser['screensize']['axisX1'] + ", " \
-                          + config_parser['screensize']['axisY1'] + ") (" + config_parser['screensize']['axisX2'] \
-                          + ", " + config_parser['screensize']['axisY2'] + ")"
-        self.cover_label = QLabel(self.cover_text, self)
-
-        self.storage_text = "현재 저장 장소 = " + config_parser['directory']['directory']
-        self.storage_label = QLabel(self.storage_text, self)
         # 버튼 생성
         reset_str_btn = QPushButton('저장 장소 초기화')
         reset_str_btn.setToolTip('저장 장소를 초기화 합니다.')
@@ -168,7 +169,7 @@ class ScreenshotCapture(QWidget):
 
         open_btn = QPushButton('저장 장소 열기')
         open_btn.setToolTip('스크린샷이 저장된 위치를 엽니다.')
-        open_btn.clicked.connect(self.open_directory)  # 버튼이 클릭되면 해당 함수 실행
+        open_btn.clicked.connect(open_directory)  # 버튼이 클릭되면 해당 함수 실행
 
         set_btn = QPushButton('촬영 범위 설정')
         set_btn.setToolTip('스크린샷 촬영 범위를 설정합니다')
@@ -190,7 +191,8 @@ class ScreenshotCapture(QWidget):
 
         box_2 = QHBoxLayout()
         box_2.addStretch(1)
-        box_2.addWidget(QLabel('현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(GetSystemMetrics(0)) + ' X ' + str(GetSystemMetrics(1))))  # 현재 화면 크기 출력
+        box_2.addWidget(QLabel(
+            '현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(GetSystemMetrics(0)) + ' X ' + str(GetSystemMetrics(1))))  # 현재 화면 크기 출력
         box_2.addStretch(1)
 
         box_3 = QHBoxLayout()
