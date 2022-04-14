@@ -7,12 +7,12 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QDateTime, QTime
-from win32api import GetSystemMetrics
+import AppKit
 from PIL import ImageGrab
 import configparser
-import mouse as ms
 import keyboard as kb
 
+"""from win32api import GetSystemMetrics"""
 
 def open_directory():  # 저장 공간 열기
     config_parser = configparser.ConfigParser()
@@ -46,8 +46,8 @@ class ScreenshotCapture(QWidget):
         config_parser['screensize'] = {}
         config_parser['screensize']['axisX1'] = '0'
         config_parser['screensize']['axisY1'] = '0'
-        config_parser['screensize']['axisX2'] = str(GetSystemMetrics(0))
-        config_parser['screensize']['axisY2'] = str(GetSystemMetrics(1))
+        config_parser['screensize']['axisX2'] = str(screen.frame().size.width for screen in AppKit.NSScreen.screens())
+        config_parser['screensize']['axisY2'] = str(screen.frame().size.height for screen in AppKit.NSScreen.screens())
 
         # 설정파일 저장
         with open('config.ini', 'w', encoding='utf-8') as configfile:  # 스크린샷 저장 폴더가 없을 경우 만듬
@@ -69,15 +69,18 @@ class ScreenshotCapture(QWidget):
 
     def reset_cov(self):  # 촬영 범위 리셋
         self.cover_label.setText(
-            "현재 촬영할 범위(픽셀) = (0, 0) (" + str(GetSystemMetrics(0)) + ", " + str(GetSystemMetrics(1)) + ")")
+            "현재 촬영할 범위(픽셀) = (0, 0) (" + str(screen.frame().size.width for screen in AppKit.NSScreen.screens())
+            + ", " + str(screen.frame().size.height for screen in AppKit.NSScreen.screens()) + ")")
         self.cover_label.repaint()
         config_parser = configparser.ConfigParser()
         config_parser.read('config.ini', encoding='utf-8')
         with open('config.ini', 'w', encoding='utf-8') as configfile:
             config_parser.set('screensize', 'axisX1', '0')
             config_parser.set('screensize', 'axisY1', '0')
-            config_parser.set('screensize', 'axisX2', str(GetSystemMetrics(0)))
-            config_parser.set('screensize', 'axisY2', str(GetSystemMetrics(1)))
+            config_parser.set('screensize', 'axisX2',
+                              str(screen.frame().size.width for screen in AppKit.NSScreen.screens()))
+            config_parser.set('screensize', 'axisY2',
+                              str(screen.frame().size.height for screen in AppKit.NSScreen.screens()))
             config_parser.write(configfile)
         configfile.close()
 
@@ -191,7 +194,8 @@ class ScreenshotCapture(QWidget):
         box_2 = QHBoxLayout()
         box_2.addStretch(1)
         box_2.addWidget(QLabel(
-            '현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(GetSystemMetrics(0)) + ' X ' + str(GetSystemMetrics(1))))  # 현재 화면 크기 출력
+            '현재 화면 크기(픽셀) : 가로 X 세로 : ' + str(screen.frame().size.width for screen in AppKit.NSScreen.screens())
+            + ' X ' + str(screen.frame().size.height for screen in AppKit.NSScreen.screens())))  # 현재 화면 크기 출력
         box_2.addStretch(1)
 
         box_3 = QHBoxLayout()
